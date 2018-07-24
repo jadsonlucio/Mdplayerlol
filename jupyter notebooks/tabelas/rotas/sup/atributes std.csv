@@ -1,0 +1,25 @@
+,rota,atributo relativo,desvio padrao
+8,sup,physicalDamageDealt,0.03600533674701978
+7,sup,neutralMinionsKilled,0.03814298106135966
+9,sup,physicalDamageDealtToChampions,0.07637557920901301
+5,sup,magicDamageDealt,0.1639841987419472
+17,sup,totalTimeCrowdControlDealt,0.18277657622905297
+16,sup,totalMinionsKilled,0.2010608358879504
+19,sup,trueDamageDealtToChampions,0.3069904126021286
+13,sup,totalDamageDealtToChampions,0.40649811155215043
+3,sup,kills,0.4418179193041381
+2,sup,goldEarned,0.48877288622037
+12,sup,totalDamageDealt,0.6468899726682408
+10,sup,physicalDamageTaken,0.6734609814922466
+14,sup,totalDamageTaken,0.7012533802009316
+23,sup,wardsPlaced,0.7320622190861154
+20,sup,trueDamageTaken,0.745595184839367
+21,sup,visionScore,0.7518566823664855
+6,sup,magicalDamageTaken,0.8111662040569939
+15,sup,totalHeal,0.8149290023146617
+22,sup,visionWardsBoughtInGame,0.9555812920963968
+4,sup,longestTimeSpentLiving,0.9615648264230242
+1,sup,deaths,1.0354194559470762
+11,sup,timeCCingOthers,1.051720866258124
+0,sup,assists,1.0919736864579446
+18,sup,trueDamageDealt,1.127558227749579

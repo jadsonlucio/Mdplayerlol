@@ -1,0 +1,6 @@
+,route,train size,test size,Model selection,Model Classification,f1 score accuracy
+0,adc,700,374,LinearSVC,RandomForestClassifier,0.7466666666666667
+1,sup,700,428,LinearSVC,RandomForestClassifier,0.7009803921568627
+2,mid,700,355,LinearSVC,RandomForestClassifier,0.6646341463414633
+3,jg,700,460,LinearSVC,RandomForestClassifier,0.6950959488272921
+4,top,700,343,LinearSVC,RandomForestClassifier,0.6514657980456026
