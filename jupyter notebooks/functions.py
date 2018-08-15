@@ -19,6 +19,7 @@ def add_atributos_relativos(match_dataframe,atributos):
     dataframe : Dataframe com os atributos relativos adicionados.
     
     """
+    print("entrou")
     for atributo in atributos:
         array_time_1=match_dataframe[atributo][:5]
         array_time_2=match_dataframe[atributo][5:]

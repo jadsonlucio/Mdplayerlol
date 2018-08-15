@@ -1,7 +1,7 @@
 #table paths
-path_dataset="../../datasets/ranked_dataset.csv"
-path_treated_dataset="../../datasets/treated_dataset.csv"
-path_routes_datasets="../../datasets/routes/"
+path_dataset="../datasets/ranked_dataset.csv"
+path_treated_dataset="../datasets/treated_dataset.csv"
+path_routes_datasets="../datasets/routes/"
 path_table_files="tabelas/"
 path_info_routes="tabelas/informações dos dados das rota.csv"
 path_routes_importance="tabelas/importancia das rotas.csv"
