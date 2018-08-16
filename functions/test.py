@@ -8,7 +8,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 import pandas as pd
 
 dataframe = pd.read_csv(
-    r"C:\Users\pandaQ\Documents\Github\Mdplayerlol\datasets\ranked_dataset.csv")
+    r"/home/jadson/Documentos/Github/Mdplayerlol/datasets/ranked_dataset.csv")
 
 pre_process = Pre_processing(dataframe)
 

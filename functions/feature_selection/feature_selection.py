@@ -1,4 +1,8 @@
 from sklearn.ensemble import *
+from sklearn.pipeline import Pipeline
+from sklearn.feature_selection import SelectFromModel
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score
 
 STANDARD_MODELS = {
     "ExtraTreesClassifier": ExtraTreesClassifier,
@@ -29,7 +33,7 @@ def feature_importance_by_model(dataframe, model, trainX_attributes, trainY_attr
                              "importance".format(type(model).__name__, tuple(feature_importances_attributes)))
 
 
-def calculate_score(dataframe, attributes_scores: dict):
+def calculate_score(dataframe, attributes_scores):
     def calculate_score(dict):
         global attributes_scores
         score = 0
@@ -42,3 +46,11 @@ def calculate_score(dataframe, attributes_scores: dict):
     dataframe.insert(loc=0, column="score", value=serie)
 
     return dataframe
+
+
+def pipeline(x, y, train_size,model_feature_selection, model_test, model_type):
+    trainX,testX,trainY,testY = train_test_split(x, y, train_size=train_size, random_state=4)
+    _pipeline=Pipeline([("features_selection",SelectFromModel(model_feature_selectione)),(model_type,model_test)])
+    _pipeline.fit(trainX, trainY)
+    accuracy = f1_score(testY, _pipeline.predict(testX))
+
