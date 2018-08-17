@@ -29,6 +29,7 @@ def feature_importance_by_model(dataframe, model, trainX_attributes, trainY_attr
 def pipeline(x, y, train_size,model_feature_selection, model_test, model_type):
     trainX,testX,trainY,testY = train_test_split(x, y, train_size=train_size, test_size=1-train_size,
                                                                                     random_state=4)
+
     _pipeline=Pipeline([("feature_selection",SelectFromModel(model_feature_selection)),(model_type,model_test)])
     _pipeline.fit(trainX, trainY)
     accuracy = f1_score(testY, _pipeline.predict(testX))

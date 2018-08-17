@@ -14,7 +14,7 @@ def set_champion_data(matchs_dataframe):
     champion_data = champion_json["data"].values()
     champions_info_data = []
 
-    for champion_id in matchs_dataframe["champion"]:
+    for champion_id in matchs_dataframe["championId"]:
         for champion in champion_data:
             if(int(champion["key"]) == int(champion_id)):
                 champions_info_data.append(

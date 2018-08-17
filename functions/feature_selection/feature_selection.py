@@ -60,6 +60,7 @@ def run_pipeline(train_matchs_dataframe, test_parms):
     for route_label,route_dataframe in zip(constants.lanes_positions,routes_dataframe):
         x = route_dataframe[test_parms["pipeline_input_attributes"]]
         y = route_dataframe[test_parms["pipeline_output_attributes"]]
+
         routes_pipeline[route_label] = pipeline(x, y, test_parms["pipeline_train_size"], 
         test_parms["pipeline_feature_selection_model"], test_parms["pipeline_test_mode"], 
         test_parms["pipeline_model_type"])
@@ -74,13 +75,10 @@ def run_pipeline(train_matchs_dataframe, test_parms):
 def run_validation(validation_matchs_dataframe, test_parms):
   
     x, y = [],[]
-    z = []
     for label,dataframe in validation_matchs_dataframe.groupby("gameCreation"):
         x.append(dataframe["score"])
         y.append(list(dataframe["win"])[0])
-        z.append(dataframe["position"])
 
-    print(z)
     cross_validation_models = {}
     for cross_validation_model in test_parms["cross_validation_models"]:
         model_name = cross_validation_model.__class__.__name__
@@ -95,8 +93,7 @@ def run_validation(validation_matchs_dataframe, test_parms):
 
 
 def run_test(matchs_dataframe, test_parms=DEFAULT_TEST_PARMS):
-
-    train_dataframe, validation_dataframe = matchs_train_test_split(matchs_dataframe,test_parms["validation_size"])
+    train_dataframe, validation_dataframe = matchs_train_test_split(matchs_dataframe,test_parms["pipeline_train_size"])
     routes_pipeline,routes_features_score = run_pipeline(train_dataframe, test_parms)
     validation_dataframe = calculate_score(validation_dataframe, routes_features_score)
     cross_validation_models=run_validation(validation_dataframe, test_parms)

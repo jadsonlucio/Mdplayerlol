@@ -6,6 +6,8 @@ selected_attributes = ["assists", "deaths", "goldEarned", "kills", "longestTimeS
                       "totalDamageTaken", "totalHeal", "totalMinionsKilled", "totalTimeCrowdControlDealt", "trueDamageDealt",
                       "trueDamageDealtToChampions", "trueDamageTaken", "visionScore", "visionWardsBoughtInGame", "wardsPlaced"]
 
+attributes_weight=[1,-1,1,1,1,1,-1,1,1,1,-1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+
 rel_selected_attributes=["rel_"+attribute for attribute in selected_attributes]
 norm_selected_attributes=["norm_"+attribute for attribute in selected_attributes]
 
