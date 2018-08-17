@@ -1,8 +1,8 @@
 import pandas as pd
 
-from . import constants
 from . import feature_extraction
 from . import matchs_selection
+from .. import constants
 
 class Match_process_count():
     def __init__(self,max_matchs):

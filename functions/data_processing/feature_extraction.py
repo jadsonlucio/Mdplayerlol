@@ -1,7 +1,9 @@
 import json
 import pandas as pd
 import numpy as np
-from . import constants
+from .. import constants
+
+__all__=["set_champion_data", "set_normalized_attributes", "set_relative_attributes"]
 
 def set_champion_data(matchs_dataframe):
     # carrega o json com as informações dos campeões

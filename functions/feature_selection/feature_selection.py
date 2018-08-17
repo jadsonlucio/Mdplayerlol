@@ -1,8 +1,13 @@
+import pandas as pd
+
 from sklearn.ensemble import *
-from sklearn.pipeline import Pipeline
-from sklearn.feature_selection import SelectFromModel
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score
+from sklearn.model_selection import train_test_split,cross_val_score
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from .model_selection import pipeline
+from .. import constants
+
+__all__ = ["calculate_score","run_test"]
 
 STANDARD_MODELS = {
     "ExtraTreesClassifier": ExtraTreesClassifier,
@@ -11,46 +16,92 @@ STANDARD_MODELS = {
     "RandomForestRegressor": RandomForestRegressor
 }
 
-
-def feature_importance_by_model(dataframe, model, trainX_attributes, trainY_attributes):
-    trainX_dataframe = dataframe.get(trainX_attributes)
-    trainY_dataframe = dataframe.get(trainY_attributes)
-
-    model.fit(trainX_dataframe, trainY_dataframe)
-
-    feature_importances_attributes = ["feature_importances_"]
-
-    for feature_importances_attribute in feature_importances_attributes:
-        try:
-            feature_importances = model.__getattribute__(feature_importances_attribute)
-            return {feature_name: feature_importance for feature_name, feature_importance in
-                    zip(trainX_attributes, feature_importances)}
-        except Exception:
-            pass
-
-    else:
-        raise AttributeError("model of type {0} has no attributes {1} to compute features "
-                             "importance".format(type(model).__name__, tuple(feature_importances_attributes)))
-
-
-def calculate_score(dataframe, attributes_scores):
+def calculate_score(matchs_dataframe, routes_attributes_score):
     def calculate_score(dict):
-        global attributes_scores
         score = 0
-        for attribute_name, attribute_score in attributes_scores.items():
+        route_scores = routes_attributes_score[dict["position"]]
+        for attribute_name, attribute_score in route_scores.items():
             score = score+dict[attribute_name]*attribute_score
 
         return score
 
-    serie = dataframe.apply(calculate_score, axis=1)
-    dataframe.insert(loc=0, column="score", value=serie)
+    serie = matchs_dataframe.apply(calculate_score, axis=1)
+    matchs_dataframe.insert(loc=0, column="score", value=serie)
 
-    return dataframe
+    return matchs_dataframe
+
+def matchs_train_test_split(matchs_dataframe,train_size, test_size=None):
+    if(test_size==None):
+        test_size = 1-train_size
+    matchs_dataframes = [dataframe for label,dataframe in matchs_dataframe.groupby("gameCreation")]
+    train_dataframes, test_dataframes = train_test_split(matchs_dataframes, train_size=train_size,
+                                                                             test_size=test_size)
+    
+    train_dataframe = pd.concat(train_dataframes) 
+    test_dataframe = pd.concat(test_dataframes)
+
+    return train_dataframe,test_dataframe
+
+DEFAULT_TEST_PARMS={
+    "pipeline_model_type": "classification",
+    "pipeline_feature_selection_model": STANDARD_MODELS["RandomForestClassifier"](),
+    "pipeline_test_mode": STANDARD_MODELS["RandomForestClassifier"](),
+    "pipeline_input_attributes": constants.selected_attributes,
+    "pipeline_output_attributes": "win",
+    "pipeline_train_size": 0.75,
+    "validation_size": 0.25,
+    "cross_validation_models": [MLPClassifier(),RandomForestClassifier(),KNeighborsClassifier()]
+}
+
+def run_pipeline(train_matchs_dataframe, test_parms):
+    routes_dataframe = [dataframe for label,dataframe in train_matchs_dataframe.groupby("position")]
+    routes_pipeline = {}
+    routes_features_score = {}
+    for route_label,route_dataframe in zip(constants.lanes_positions,routes_dataframe):
+        x = route_dataframe[test_parms["pipeline_input_attributes"]]
+        y = route_dataframe[test_parms["pipeline_output_attributes"]]
+        routes_pipeline[route_label] = pipeline(x, y, test_parms["pipeline_train_size"], 
+        test_parms["pipeline_feature_selection_model"], test_parms["pipeline_test_mode"], 
+        test_parms["pipeline_model_type"])
+
+        routes_features_score[route_label] = {}
+        for feature_index, feature_score in routes_pipeline[route_label]["features_selected"]:
+            feature_name = test_parms["pipeline_input_attributes"][feature_index]
+            routes_features_score[route_label][feature_name] = feature_score
+
+    return routes_pipeline,routes_features_score
+
+def run_validation(validation_matchs_dataframe, test_parms):
+  
+    x, y = [],[]
+    z = []
+    for label,dataframe in validation_matchs_dataframe.groupby("gameCreation"):
+        x.append(dataframe["score"])
+        y.append(list(dataframe["win"])[0])
+        z.append(dataframe["position"])
+
+    print(z)
+    cross_validation_models = {}
+    for cross_validation_model in test_parms["cross_validation_models"]:
+        model_name = cross_validation_model.__class__.__name__
+        scores = cross_val_score(cross_validation_model, x, y, cv=5)
+        mean = scores.mean()
+        std = scores.std()
+        cross_validation_models[model_name]=(mean,std)
+    
+    return cross_validation_models
+    
 
 
-def pipeline(x, y, train_size,model_feature_selection, model_test, model_type):
-    trainX,testX,trainY,testY = train_test_split(x, y, train_size=train_size, random_state=4)
-    _pipeline=Pipeline([("features_selection",SelectFromModel(model_feature_selectione)),(model_type,model_test)])
-    _pipeline.fit(trainX, trainY)
-    accuracy = f1_score(testY, _pipeline.predict(testX))
+
+def run_test(matchs_dataframe, test_parms=DEFAULT_TEST_PARMS):
+
+    train_dataframe, validation_dataframe = matchs_train_test_split(matchs_dataframe,test_parms["validation_size"])
+    routes_pipeline,routes_features_score = run_pipeline(train_dataframe, test_parms)
+    validation_dataframe = calculate_score(validation_dataframe, routes_features_score)
+    cross_validation_models=run_validation(validation_dataframe, test_parms)
+
+    return routes_pipeline,routes_features_score,cross_validation_models
+
+
 
